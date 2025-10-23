@@ -1,27 +1,24 @@
 package org.example.config;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletRegistration;
-import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-public class WebAppInitializer implements WebApplicationInitializer {
+public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
+    // Root context: persistence, services, security, etc.
     @Override
-    public void onStartup(ServletContext servletContext) {
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class<?>[] { PersistenceConfig.class };
+    }
 
-        AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-        rootContext.register(PersistenceConfig.class);
-        servletContext.addListener(new ContextLoaderListener(rootContext));
+    // Web context: controllers, view resolvers, etc.
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class<?>[] { WebConfig.class };
+    }
 
-        AnnotationConfigWebApplicationContext webContext = new AnnotationConfigWebApplicationContext();
-        webContext.register(WebConfig.class);
-
-        ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", new DispatcherServlet(webContext));
-        dispatcher.setLoadOnStartup(1);
-        dispatcher.addMapping("/api/*");
+    // DispatcherServlet mapping
+    @Override
+    protected String[] getServletMappings() {
+        return new String[] { "/api/*" };
     }
 }
-

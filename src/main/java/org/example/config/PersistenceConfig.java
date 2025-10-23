@@ -1,7 +1,5 @@
 package org.example.config;
 
-
-import jakarta.persistence.EntityManagerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +16,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "org.example.repository")
-@ComponentScan(basePackages = "org.example.service")
+@ComponentScan(basePackages = {"org.example"})
 public class PersistenceConfig {
 
     @Bean
@@ -33,15 +31,32 @@ public class PersistenceConfig {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
-        emf.setDataSource(dataSource());
-        emf.setPackagesToScan("org.example.model");
-        emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        return emf;
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setPersistenceUnitName("default");
+        em.setPackagesToScan("org.example.entity");
+        em.setDataSource(dataSource());
+
+
+
+        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+        adapter.setDatabase(org.springframework.orm.jpa.vendor.Database.POSTGRESQL);
+        adapter.setGenerateDdl(true);
+        adapter.setShowSql(true);
+        em.setJpaVendorAdapter(adapter);
+
+        java.util.Properties props = new java.util.Properties();
+        props.setProperty("hibernate.hbm2ddl.auto", "update");
+        props.setProperty("spring.jpa.show-sql", "true");
+        props.setProperty("hibernate.format_sql", "true");
+
+        em.setJpaProperties(props);
+
+        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        return em;
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+    public PlatformTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean emf) {
+        return new JpaTransactionManager(emf.getObject());
     }
 }
