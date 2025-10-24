@@ -117,7 +117,7 @@
 
 
   </dependencies>
-    "<build>
+    <build>
       <finalName>springCore</finalName>
       <plugins>
         <plugin>
@@ -135,6 +135,6 @@
           </configuration>
         </plugin>
       </plugins>
-    </build>"
+    </build>
 
 </project>

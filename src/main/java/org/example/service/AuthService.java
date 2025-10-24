@@ -26,13 +26,20 @@ public class AuthService {
         }
 
         user.setPassword(null);
-        String token = JwtUtil.generateToken(user.getEmail(), user.getRole());
-
+        System.out.println("Email: " + user.getEmail());
+        System.out.println("Role: " + user.getRole());
+        String token = JwtUtil.generateToken(user.getEmail(), user.getRole().name());
+        System.out.println("Token: " + token);
         return new AuthResponse("Login successful", user,token);
     }
 
 
     public User save(User user) {
+        return repo.save(user);
+    }
+
+
+    public User update(User user){
         return repo.save(user);
     }
 }

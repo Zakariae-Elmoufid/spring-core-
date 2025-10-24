@@ -7,11 +7,23 @@ public class AuthResponse {
     private User user;
     private String token;
 
-    public AuthResponse(String message, User user,String token) {
+    public AuthResponse() {
+    }
+
+    public AuthResponse(String message , User user ,  String token) {
         this.message = message;
         this.user = user;
         this.token = token;
     }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
 
     public String getMessage() {
         return message;

@@ -6,29 +6,22 @@ import io.jsonwebtoken.security.Keys;
 import org.example.enums.Role;
 
 import java.security.Key;
+import java.util.Date;
 
 public class JwtUtil {
 
-    private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public static String generateToken(String email, Role role) {
+    public static String generateToken(String email, String role) {
+        long expirationTime = 3600000;
+
         return Jwts.builder()
                 .setSubject(email)
-                .claim("role", role.name())
-                .signWith(key)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(SECRET_KEY)
                 .compact();
-    }
-
-    public static String getEmail(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build()
-                .parseClaimsJws(token).getBody().getSubject();
-    }
-
-    // Get role
-    public static Role getRole(String token) {
-        String roleStr = (String) Jwts.parserBuilder().setSigningKey(key).build()
-                .parseClaimsJws(token).getBody().get("role");
-        return Role.valueOf(roleStr);
     }
 
 
